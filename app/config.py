@@ -1,6 +1,6 @@
 # app/config.py
 
-HOST="127.0.0.1"
-PORT=8002
+HOST="192.168.254.27"
+PORT=8007
 MONGOURL="mongodb://localhost:27017" 
 MONGODB="chatDB" 
