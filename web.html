@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat WebSocket</title>
+</head>
+
+<body>
+    <h2>Chat WebSocket</h2>
+
+    <label>
+        Sala: <input type="text" id="sala" value="sala1">
+    </label>
+    <label>
+        Nickname: <input type="text" id="nickname" value="Usuário">
+    </label>
+    <button id="entrar">Entrar</button>
+
+    <br><br>
+
+    <div id="chat"></div>
+    <input type="text" id="mensagem" placeholder="Informe a mensagem para enviar...">
+    <button id="enviar">Enviar</button>
+
+    <br><br>
+
+    <div id="usuarios">
+        Usuários da Sala:
+        <span id="listaDeUsuarios"></span>
+    </div>
+
+    <script>
+        let ws;
+        const chat = document.getElementById("chat");
+        const listaDeUsuarios = document.getElementById("listaDeUsuarios");
+        const salaInput = document.getElementById("sala");
+        const nicknameInput = document.getElementById("nickname");
+        const mensagemInput = document.getElementById("mensagem");
+
+        document.getElementById("entrar").onclick = () => {
+            const sala = salaInput.value;
+            const nickname = nicknameInput.value;
+            ws = new WebSocket(`ws://192.168.254.27:8007/ws/${sala}?nickname=${nickname}`);
+
+        }
+
+
+
+    </script>
+
+</body>
+
+</html>
