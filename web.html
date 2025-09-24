@@ -74,7 +74,9 @@
                 const msg = event.data;
                 adicionarMensagem(msg);
                 if(msg.startsWith("[sistema] Usuários")){
-                    listaDeUsuariosSpan.textContent = msg.replace("[sistema] Usuários na sala "+ sala +": ", "");
+                    users = msg.replace("[sistema] Usuários na sala "+ sala +": ", "");
+                    //alert(users);
+                    listaDeUsuariosSpan.textContent = users
                 }
             };
 

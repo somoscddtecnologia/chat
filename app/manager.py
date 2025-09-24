@@ -37,7 +37,7 @@ class ConnectionManager:
     async def list_users(self, sala_id: str) -> List[str]:
         async with self.lock:
             if sala_id in self.salas:
-                return list(self.salas[sala_id].values)
+                return list(self.salas[sala_id].values())
             return []    
 
 #inicializando
