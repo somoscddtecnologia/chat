@@ -1,6 +1,6 @@
 # app/database.py
 
-from pymongo import MongoClient, ASCENDING
+from pymongo import MongoClient, ASCENDING, DESCENDING
 from motor.motor_asyncio import AsyncIOMotorClient
 from .config import MONGOURL, MONGODB 
 
@@ -22,6 +22,7 @@ async def salvar_mensagem(sala_id: str, nickname: str, mensagem: str):
         }
         )
 
-async def pegar_historico(sala_id: str, limite: int = 5):
-    dados = mensagens.find({"sala_id": sala_id}).sort("_id", ASCENDING).limit(limite)
-    return [doc async for doc in dados]
+async def pegar_historico(sala_id: str, limite: int = 10):
+    dados = mensagens.find({"sala_id": sala_id}).sort("_id", DESCENDING).limit(limite)
+    docs = [doc async for doc in dados]
+    return list(reversed(docs))
