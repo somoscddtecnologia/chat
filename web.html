@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    <h2>Chat WebSocket</h2>
+    <h2>Chat WebSocket - 192.168.254.217 *Talita</h2>
 
     <label>
         Sala: <input type="text" id="sala" value="sala1">
@@ -67,7 +67,7 @@
         document.getElementById("entrar").onclick = () => {
             const sala = salaInput.value;
             const nickname = nicknameInput.value;
-            ws = new WebSocket(`ws://127.0.0.1:8000/ws/${sala}?nickname=${nickname}`);
+            ws = new WebSocket(`ws://192.168.254.217:8000/ws/${sala}?nickname=${nickname}`);
             ws.onopen = () => adicionarMensagem("Conectando à sala " + sala);
 
             ws.onmessage = (event) => {
@@ -75,8 +75,11 @@
                 adicionarMensagem(msg);
                 if(msg.startsWith("[sistema] Usuários")){
                     users = msg.replace("[sistema] Usuários na sala "+ sala +": ", "");
-                    //alert(users);
                     listaDeUsuariosSpan.textContent = users
+                }
+                if(msg.startsWith("[sistema] Novo usuário:")){
+                    user = msg.replace("[sistema] Novo usuário:", "");
+                    alert(user)
                 }
             };
 
@@ -88,7 +91,7 @@
             if (ws && ws.readyState === WebSocket.OPEN){
                 const msg = mensagemInput.value;
                 ws.send(msg);
-                adicionarMensagem(msg); //retirar depois
+                //adicionarMensagem(msg); //retirar depois
                 mensagemInput.value = '';
             }
         };

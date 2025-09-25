@@ -11,11 +11,11 @@ async def websocket_endpoint(websocket: WebSocket, sala_id: str, nickname: str =
 
     try:
         #quando alguém entrar na sala
-        await manager.broadcast(sala_id, f"[sistema] {nickname} entrou na sala {sala_id}.")
+        await manager.broadcast(sala_id, f"[sistema] novo usuário: {nickname} entrou na sala {sala_id}.")
 
         #atualizando a lista de usuários
         usuarios = await manager.list_users(sala_id)
-        await manager.broadcast(sala_id, f"[sistema] Usuários na sala {sala_id}: " . join(usuarios));# adicionar pela lista
+        await manager.broadcast(sala_id, f"[sistema] Usuários na sala {sala_id}: {', '.join(usuarios)}")
         
         #enviar histórico apenas para quem entrar
         historico = await pegar_historico(sala_id)
@@ -27,7 +27,7 @@ async def websocket_endpoint(websocket: WebSocket, sala_id: str, nickname: str =
 
             if data.strip() == "/usuarios":
                 usuarios = await manager.list_users(sala_id)
-                await websocket.send_text(f"[sistema] Usuários da sala {sala_id}: " . join(usuarios))
+                await websocket.send_text(f"[sistema] Usuários da sala {sala_id}: {', ' . join(usuarios)}")
             else:
                 await salvar_mensagem(sala_id, nickname, data)
                 await manager.broadcast(sala_id, f"{nickname}: {data}")

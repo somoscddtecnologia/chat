@@ -22,7 +22,7 @@ async def salvar_mensagem(sala_id: str, nickname: str, mensagem: str):
         }
         )
 
-async def pegar_historico(sala_id: str, limite: int = 10):
+async def pegar_historico(sala_id: str, limite: int = 2):
     dados = mensagens.find({"sala_id": sala_id}).sort("_id", DESCENDING).limit(limite)
     docs = [doc async for doc in dados]
     return list(reversed(docs))
