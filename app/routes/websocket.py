@@ -28,8 +28,9 @@ async def websocket_endpoint(websocket: WebSocket, sala_id: str, nickname: str =
             if data.strip() == "/usuarios":
                 usuarios = await manager.list_users(sala_id)
                 await websocket.send_text(f"[sistema] Usuários da sala {sala_id}: " . join(usuarios))
-
-            await salvar_mensagem(sala_id, nickname, data)
+            else:
+                await salvar_mensagem(sala_id, nickname, data)
+                await manager.broadcast(sala_id, f"{nickname}: {data}")
     
     except WebSocketDisconnect:
         #sinal de desconexão
