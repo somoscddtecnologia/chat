@@ -5,50 +5,129 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat WebSocket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --primary-color: #1d4ed8;
+            --secondary-color: #2563eb;
+            --text-color: #111827;
+            --input-bg: #ffffff;
+            --border-color: #e5e7eb;
+        }
+
         body {
-            margin: 20px;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .form-group input {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background-color: var(--input-bg);
+            flex: 1;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
         }
 
         #chat {
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             padding: 10px;
             height: 300px;
-            overflow-y: scroll;
+            overflow-y: auto;
+            background-color: #f9fafb;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
         }
 
         #mensagem {
-            width: 80%;
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
         }
 
-        #enviar {
-            width: 18%;
+        #usuarios {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        #listaDeUsuarios {
+            font-weight: 600;
         }
     </style>
 </head>
 
 <body>
-    <h2>Chat WebSocket - 192.168.254.161 *Local</h2>
+    <div class="container">
+        <h2>Chat WebSocket - 192.168.254.161 <span style="font-size: 0.7em;">*Local</span></h2>
 
-    <label>
-        Sala: <input type="text" id="sala" value="sala1">
-    </label>
-    <label>
-        Nickname: <input type="text" id="nickname" value="Usuário">
-    </label>
-    <button id="entrar">Entrar</button>
-    <button id="sair">Sair</button>
-    <br><br>
+        <div class="form-group">
+            <input type="text" id="sala" placeholder="Sala" value="sala1">
+            <input type="text" id="nickname" placeholder="Nickname" value="Usuário">
+            <button id="entrar">Entrar</button>
+            <button id="sair" style="background-color: #dc2626;">Sair</button>
+        </div>
 
-    <div id="chat"></div>
-    <input type="text" id="mensagem" placeholder="Informe a mensagem para enviar...">
-    <button id="enviar">Enviar</button>
+        <div id="chat"></div>
 
-    <br><br>
+        <div class="input-area">
+            <input type="text" id="mensagem" placeholder="Digite sua mensagem...">
+            <button id="enviar">Enviar</button>
+        </div>
 
-    <div id="usuarios">
-        Usuários da Sala:
-        <span id="listaDeUsuarios"></span>
+        <div id="usuarios">
+            <strong>Usuários da Sala:</strong>
+            <span id="listaDeUsuarios"></span>
+        </div>
     </div>
 
     <script>
@@ -77,23 +156,35 @@
                 adicionarMensagem(msg);
                 if (msg.startsWith("[sistema] Usuários")) {
                     users = msg.replace("[sistema] Usuários na sala " + sala + ": ", "");
-                    listaDeUsuariosSpan.textContent = users
+                    listaDeUsuariosSpan.textContent = users;
                 }
+
+                if (msg.startsWith("Desconectado")) {
+                    let resultado = listaDeUsuariosSpan.textContent
+                        .split(',')
+                        .filter(palavra => !palavra.includes(nicknameInput.value))
+                        .join(',');
+
+                    if (resultado.startsWith("[sistema] ")) {
+                        resultado = resultado.replace("[sistema] ", "");
+                    }
+
+                    listaDeUsuariosSpan.textContent = resultado;
+                }
+
                 if (msg.startsWith("[sistema] Novo usuário:")) {
                     user = msg.replace("[sistema] Novo usuário:", "");
-                    alert(user)
+                    alert(user);
                 }
             };
 
             ws.onclose = () => adicionarMensagem("Desconectado");
-
         };
 
         document.getElementById("enviar").onclick = () => {
             if (ws && ws.readyState === WebSocket.OPEN) {
                 const msg = mensagemInput.value;
                 ws.send(msg);
-                //adicionarMensagem(msg); //retirar depois
                 mensagemInput.value = '';
             }
         };
@@ -107,20 +198,14 @@
                     .filter(palavra => !palavra.includes(nicknameInput.value))
                     .join(',');
 
-                 if (resultado.startsWith("[sistema] ")) {
+                if (resultado.startsWith("[sistema] ")) {
                     resultado = resultado.replace("[sistema] ", "");
-                 }
-                 
+                }
 
-                listaDeUsuariosSpan.textContent = resultado
+                listaDeUsuariosSpan.textContent = resultado;
             }
-        }
-
-
-
-
+        };
     </script>
-
 </body>
 
 </html>
