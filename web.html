@@ -7,14 +7,16 @@
     <title>Chat WebSocket</title>
     <style>
         body {
-            margin:20px;
+            margin: 20px;
         }
-        #chat { 
-            border: 1px solid #ccc; 
-            padding: 10px; 
-            height: 300px; 
+
+        #chat {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 300px;
             overflow-y: scroll;
         }
+
         #mensagem {
             width: 80%;
         }
@@ -26,7 +28,7 @@
 </head>
 
 <body>
-    <h2>Chat WebSocket - 192.168.254.217 *Talita</h2>
+    <h2>Chat WebSocket - 192.168.254.161 *Local</h2>
 
     <label>
         Sala: <input type="text" id="sala" value="sala1">
@@ -35,7 +37,7 @@
         Nickname: <input type="text" id="nickname" value="Usuário">
     </label>
     <button id="entrar">Entrar</button>
-
+    <button id="sair">Sair</button>
     <br><br>
 
     <div id="chat"></div>
@@ -57,7 +59,7 @@
         const nicknameInput = document.getElementById("nickname");
         const mensagemInput = document.getElementById("mensagem");
 
-        function adicionarMensagem(msg){
+        function adicionarMensagem(msg) {
             const p = document.createElement('p');
             p.textContent = msg;
             chatDiv.appendChild(p);
@@ -67,17 +69,17 @@
         document.getElementById("entrar").onclick = () => {
             const sala = salaInput.value;
             const nickname = nicknameInput.value;
-            ws = new WebSocket(`ws://192.168.254.217:8000/ws/${sala}?nickname=${nickname}`);
+            ws = new WebSocket(`ws://127.0.0.1:8000/ws/${sala}?nickname=${nickname}`);
             ws.onopen = () => adicionarMensagem("Conectando à sala " + sala);
 
             ws.onmessage = (event) => {
                 const msg = event.data;
                 adicionarMensagem(msg);
-                if(msg.startsWith("[sistema] Usuários")){
-                    users = msg.replace("[sistema] Usuários na sala "+ sala +": ", "");
+                if (msg.startsWith("[sistema] Usuários")) {
+                    users = msg.replace("[sistema] Usuários na sala " + sala + ": ", "");
                     listaDeUsuariosSpan.textContent = users
                 }
-                if(msg.startsWith("[sistema] Novo usuário:")){
+                if (msg.startsWith("[sistema] Novo usuário:")) {
                     user = msg.replace("[sistema] Novo usuário:", "");
                     alert(user)
                 }
@@ -87,14 +89,33 @@
 
         };
 
-        document.getElementById("enviar").onclick = () =>{
-            if (ws && ws.readyState === WebSocket.OPEN){
+        document.getElementById("enviar").onclick = () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
                 const msg = mensagemInput.value;
                 ws.send(msg);
                 //adicionarMensagem(msg); //retirar depois
                 mensagemInput.value = '';
             }
         };
+
+        document.getElementById("sair").onclick = () => {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.close();
+
+                let resultado = listaDeUsuariosSpan.textContent
+                    .split(',')
+                    .filter(palavra => !palavra.includes(nicknameInput.value))
+                    .join(',');
+
+                 if (resultado.startsWith("[sistema] ")) {
+                    resultado = resultado.replace("[sistema] ", "");
+                 }
+                 
+
+                listaDeUsuariosSpan.textContent = resultado
+            }
+        }
+
 
 
 

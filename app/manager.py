@@ -40,5 +40,14 @@ class ConnectionManager:
                 return list(self.salas[sala_id].values())
             return []    
 
+
+    async def desconectar_usuario(self, sala_id: str, nickname: str):
+        async with self.lock:
+            if sala_id in self.salas:
+                return sala_id
+                del self.salas[sala_id][nickname]
+                if not self.salas[sala_id]:
+                    del self.salas[sala_id]
+
 #inicializando
 manager = ConnectionManager()
